@@ -1,0 +1,61 @@
+# Node/Nest/Prisma
+node_modules/
+dist/
+build/
+coverage/
+.nyc_output/
+*.tsbuildinfo
+.eslintcache
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids/
+*.pid
+*.seed
+*.pid.lock
+
+# Env files
+.env
+.env.*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# Framework/build outputs
+.next/
+.nuxt/
+.svelte-kit/
+.vite/
+.turbo/
+out/
+
+# Generated artifacts
+backend/generated/
+frontend/dist/
+
+# Temp/cache
+.tmp/
+.temp/
+.cache/
+.parcel-cache/
+
+# Local databases
+*.sqlite
+*.sqlite3
+*.db
