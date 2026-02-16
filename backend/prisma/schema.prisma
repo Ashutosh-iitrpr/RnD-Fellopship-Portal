@@ -32,15 +32,16 @@ model Department {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  name      String
-  email     String   @unique
-  role      Role
-  isActive  Boolean  @default(true)
-  createdAt DateTime @default(now())
+  id          String   @id @default(uuid())
+  name        String
+  email       String   @unique
+  entryNumber String   @unique
+  role        Role
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
 
-  deptId    String?
-  department Department? @relation(fields: [deptId], references: [id])
+  deptId      String?
+  department  Department? @relation(fields: [deptId], references: [id])
 }
 
 model Otp {
@@ -49,4 +50,27 @@ model Otp {
   code      String
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+
+model FundingAgency {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  code      String?
+  createdAt DateTime @default(now())
+}
+
+enum DesignationType {
+  FELLOWSHIP
+  PROJECT_STAFF
+}
+
+model Designation {
+  id                  String          @id @default(uuid())
+  code                String          @unique
+  name                String
+  type                DesignationType
+  hraApplicable       Boolean
+  coTerminusWithProject Boolean
+  notes               String?
+  createdAt           DateTime        @default(now())
 }

@@ -8,9 +8,15 @@ export class UsersController {
 
   @Roles(Role.ADMIN)
   @Post()
-  create(@Body() body: any) {
+  create(@Body() body: {
+  name: string;
+  email: string;
+  entryNumber: string;
+  role: Role;
+  }) {
     return this.usersService.create(body);
   }
+
 
   @Roles(Role.ADMIN)
   @Get()
