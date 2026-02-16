@@ -80,6 +80,10 @@ model Designation {
   coTerminusWithProject Boolean
   notes               String?
   createdAt           DateTime        @default(now())
+
+  appointments        ProjectAppointment[]
+  appointmentChanges  AppointmentChange[]
+  rateCards           RateCard[]
 }
 
 enum ProjectStatus {
@@ -105,6 +109,9 @@ model Project {
   fundingAgency    FundingAgency  @relation(fields: [fundingAgencyId], references: [id])
 
   sanctions ProjectSanction[]
+  extensions ProjectExtension[]
+  ledgerEntries ProjectFundLedger[]
+  appointments ProjectAppointment[]
 
 }
 
@@ -114,6 +121,24 @@ enum SanctionStatus {
   COMMITTED
   RECEIVED
   REJECTED
+}
+
+enum LedgerEntryType {
+  RECEIPT
+  DISBURSEMENT
+  ADJUSTMENT
+}
+
+enum CityClass {
+  A
+  B
+  C
+}
+
+enum PayrollRunStatus {
+  DRAFT
+  FINALIZED
+  CANCELLED
 }
 
 model ProjectSanction {
@@ -127,4 +152,158 @@ model ProjectSanction {
   createdAt     DateTime       @default(now())
 
   project       Project        @relation(fields: [projectId], references: [id])
+}
+
+model ProjectExtension {
+  id          String   @id @default(uuid())
+  projectId   String
+  oldEndDate  DateTime
+  newEndDate  DateTime
+  reason      String?
+  createdAt   DateTime @default(now())
+
+  project     Project  @relation(fields: [projectId], references: [id])
+}
+
+model ProjectFundLedger {
+  id          String          @id @default(uuid())
+  projectId   String
+  entryType   LedgerEntryType
+  amount      Float
+  reference   String?
+  notes       String?
+  createdAt   DateTime @default(now())
+
+  project     Project @relation(fields: [projectId], references: [id])
+}
+
+model Person {
+  id        String   @id @default(uuid())
+  name      String
+  email     String?  @unique
+  phone     String?
+  createdAt DateTime @default(now())
+
+  bankAccounts   BankAccount[]
+  appointments   ProjectAppointment[]
+}
+
+model BankAccount {
+  id            String  @id @default(uuid())
+  personId      String
+  bankName      String
+  accountNumber String
+  ifsc          String
+  isPrimary     Boolean @default(true)
+
+  person        Person  @relation(fields: [personId], references: [id])
+}
+
+model ProjectAppointment {
+  id            String   @id @default(uuid())
+  projectId     String
+  personId      String
+  designationId String
+  startDate     DateTime
+  endDate       DateTime
+  createdAt     DateTime @default(now())
+
+  project       Project     @relation(fields: [projectId], references: [id])
+  person        Person      @relation(fields: [personId], references: [id])
+  designation   Designation @relation(fields: [designationId], references: [id])
+
+  changes       AppointmentChange[]
+  hraSettings   AppointmentHraSetting[]
+  attendance    AttendanceMonthly[]
+  payrollLines  PayrollLine[]
+  recoveries    Recovery[]
+}
+
+model AppointmentChange {
+  id             String   @id @default(uuid())
+  appointmentId  String
+  effectiveFrom  DateTime
+  designationId  String?
+  endDate        DateTime?
+  reason         String?
+  createdAt      DateTime @default(now())
+
+  appointment    ProjectAppointment @relation(fields: [appointmentId], references: [id])
+  designation    Designation?       @relation(fields: [designationId], references: [id])
+}
+
+model RateCard {
+  id             String   @id @default(uuid())
+  designationId  String
+  effectiveFrom  DateTime
+  effectiveTo    DateTime?
+  baseSalary     Float
+  hraPercent     Float
+  createdAt      DateTime @default(now())
+
+  designation    Designation @relation(fields: [designationId], references: [id])
+}
+
+model HraRate {
+  id         String    @id @default(uuid())
+  cityClass  CityClass
+  percent    Float
+  createdAt  DateTime  @default(now())
+}
+
+model AppointmentHraSetting {
+  id             String    @id @default(uuid())
+  appointmentId  String
+  cityClass      CityClass
+  effectiveFrom  DateTime
+  effectiveTo    DateTime?
+  createdAt      DateTime  @default(now())
+
+  appointment    ProjectAppointment @relation(fields: [appointmentId], references: [id])
+}
+
+model AttendanceMonthly {
+  id             String   @id @default(uuid())
+  appointmentId  String
+  month          String
+  daysPresent    Int
+  daysAbsent     Int
+  approved       Boolean  @default(false)
+  approvedAt     DateTime?
+  createdAt      DateTime @default(now())
+
+  appointment    ProjectAppointment @relation(fields: [appointmentId], references: [id])
+}
+
+model PayrollRun {
+  id        String           @id @default(uuid())
+  month     String
+  status    PayrollRunStatus @default(DRAFT)
+  createdAt DateTime         @default(now())
+
+  lines     PayrollLine[]
+}
+
+model PayrollLine {
+  id            String   @id @default(uuid())
+  payrollRunId  String
+  appointmentId String
+  gross         Float
+  deductions    Float
+  net           Float
+  notes         String?
+  createdAt     DateTime @default(now())
+
+  payrollRun    PayrollRun         @relation(fields: [payrollRunId], references: [id])
+  appointment   ProjectAppointment @relation(fields: [appointmentId], references: [id])
+}
+
+model Recovery {
+  id            String   @id @default(uuid())
+  appointmentId String
+  amount        Float
+  reason        String?
+  createdAt     DateTime @default(now())
+
+  appointment   ProjectAppointment @relation(fields: [appointmentId], references: [id])
 }
