@@ -29,6 +29,7 @@ model Department {
   createdAt DateTime @default(now())
 
   users     User[]
+  projects  Project[]   
 }
 
 model User {
@@ -42,7 +43,10 @@ model User {
 
   deptId      String?
   department  Department? @relation(fields: [deptId], references: [id])
+
+  projects    Project[]   // 👈 ADD THIS
 }
+
 
 model Otp {
   id        String   @id @default(uuid())
@@ -57,7 +61,10 @@ model FundingAgency {
   name      String   @unique
   code      String?
   createdAt DateTime @default(now())
+
+  projects  Project[]   
 }
+
 
 enum DesignationType {
   FELLOWSHIP
@@ -73,4 +80,51 @@ model Designation {
   coTerminusWithProject Boolean
   notes               String?
   createdAt           DateTime        @default(now())
+}
+
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  ON_HOLD
+}
+
+model Project {
+  id               String         @id @default(uuid())
+  projectNumber    String         @unique
+  title            String
+  deptId           String
+  piUserId         String
+  fundingAgencyId  String
+  startDate        DateTime
+  endDate          DateTime
+  status           ProjectStatus  @default(ACTIVE)
+  createdAt        DateTime       @default(now())
+
+  department       Department     @relation(fields: [deptId], references: [id])
+  pi               User           @relation(fields: [piUserId], references: [id])
+  fundingAgency    FundingAgency  @relation(fields: [fundingAgencyId], references: [id])
+
+  sanctions ProjectSanction[]
+
+}
+
+
+enum SanctionStatus {
+  REQUESTED
+  COMMITTED
+  RECEIVED
+  REJECTED
+}
+
+model ProjectSanction {
+  id            String         @id @default(uuid())
+  projectId     String
+  amount        Float
+  sanctionDate  DateTime
+  status        SanctionStatus @default(REQUESTED)
+  reference     String?
+  notes         String?
+  createdAt     DateTime       @default(now())
+
+  project       Project        @relation(fields: [projectId], references: [id])
 }
