@@ -1,6 +1,6 @@
 import { Injectable, BadRequestException } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { ProjectStatus, Role } from '@prisma/client';
+import { Role } from '@prisma/client';
 
 @Injectable()
 export class ProjectsService {

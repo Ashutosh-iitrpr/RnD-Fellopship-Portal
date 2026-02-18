@@ -4,6 +4,6 @@ import { ProjectSanctionsController } from './project-sanctions.controller';
 
 @Module({
   providers: [ProjectSanctionsService],
-  controllers: [ProjectSanctionsController]
+  controllers: [ProjectSanctionsController],
 })
 export class ProjectSanctionsModule {}

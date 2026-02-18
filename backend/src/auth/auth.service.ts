@@ -64,7 +64,7 @@ export class AuthService {
           subject: 'Your OTP Code',
           text: `Your OTP is ${otp}. It expires in 5 minutes.`,
         });
-      } catch (error) {
+      } catch {
         throw new InternalServerErrorException('Failed to send OTP email');
       }
 

@@ -4,6 +4,6 @@ import { FundingAgenciesController } from './funding-agencies.controller';
 
 @Module({
   providers: [FundingAgenciesService],
-  controllers: [FundingAgenciesController]
+  controllers: [FundingAgenciesController],
 })
 export class FundingAgenciesModule {}

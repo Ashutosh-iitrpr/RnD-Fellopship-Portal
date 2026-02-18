@@ -60,9 +60,23 @@ export class ProjectSanctionsService {
       throw new ForbiddenException('Received sanction cannot be modified');
     }
 
-    return this.prisma.projectSanction.update({
+    const updated = await this.prisma.projectSanction.update({
       where: { id },
       data: { status },
     });
+
+    if (status === SanctionStatus.RECEIVED) {
+      await this.prisma.projectFundLedger.create({
+        data: {
+          projectId: sanction.projectId,
+          entryType: 'RECEIPT',
+          amount: sanction.amount,
+          reference: sanction.reference ?? undefined,
+          notes: sanction.notes ?? undefined,
+        },
+      });
+    }
+
+    return updated;
   }
 }
